@@ -61,7 +61,6 @@ class User extends Authenticatable
 
     public function coordinates ()
     {
-        return $this-->belongsTo(GpsCoordinate::class);
+        return $this->hasMany(GpsCoordinate::class);
     }
-    
 }

@@ -14,12 +14,19 @@ class GpsCoordinate extends Model
         'latitude',
         'longitude',
         'date_time',
+        'parent_id',
     ];
 
     public $timestamps = false;
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function parent()
+    {
+        return $this->hasMany(GpsCoordinate::class);
     }
 
 

@@ -24,6 +24,18 @@ class NodeMicroservice
         throw new \Exception('Failed to fetch persons from Node.js microservice.');
     }
 
+    public function getCoordinatesPerson($id)
+    {
+        $response = Http::get("{$this->baseUrl}/coordinates/{$id}");
+
+        if ($response->successful()) {
+            return $response->json(); 
+        }
+
+        throw new \Exception('Failed to fetch persons from Node.js microservice.');
+    }
+
+
     public function getPersonById($id)
     {
         $response = Http::get("{$this->baseUrl}/api/persons/{$id}");

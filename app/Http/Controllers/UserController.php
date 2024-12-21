@@ -17,6 +17,18 @@ class UserController extends Controller
         $this->microservice = $microservice;
     }
 
+    public function index($id)
+    {
+        $coordinates = User::with('coordinates')->find($id);
+
+        if (!$coordinates) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json($coordinates);
+    }
+
+
     public function syncPersons()
     {
         $persons = $this->microservice->getAllPersons();
@@ -55,5 +67,5 @@ class UserController extends Controller
             'token' => $token,
         ],201);
     }
-    
+
 }
