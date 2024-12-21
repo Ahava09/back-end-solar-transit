@@ -17,16 +17,6 @@ class GpsCoordinateController extends Controller
         $this->microservice = $microservice;
     }
 
-    public function index($id)
-    {
-        $coordinates = User::with('coordinates')->find($id);
-
-        if (!$coordinates) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        return response()->json($coordinates);
-    }
 
 
     public function syncGpsPerson($id)
@@ -43,10 +33,7 @@ class GpsCoordinateController extends Controller
 
         $request["latitude"] = $request["currentPosition"]["latitude"]; 
         $request["longitude"] = $request["currentPosition"]["longitude"]; 
-
-        // error_log(ob_clean(), 4);
         $req = new Request($request);
-        // var_dump($req);
         return $this->store($req);
     }
 
@@ -72,5 +59,6 @@ class GpsCoordinateController extends Controller
         ]);
         return response()->json(['message' => 'Data stored successfully']);
     }
+
 }
 

@@ -27,7 +27,18 @@ class UserController extends Controller
 
         return response()->json($coordinates);
     }
+    
+    public function tracking()
+    {
+        $users = User::All();
+        $coordinates = [];
+        foreach ($users as $user) {
+            $coordinate = User::with('coordinates')->find($user->id);
+            $coordinates[] = $coordinate;
+        }
 
+        return response()->json($coordinates);
+    }
 
     public function syncPersons()
     {
@@ -38,7 +49,7 @@ class UserController extends Controller
                 ['email' => $person['email'], 'id' => $person['id']],
                 [
                     'name' => $person['name'],
-                    'password' => bcrypt('default_password'),
+                    'password' => $person['password'],
                 ]
             );
         }
@@ -54,7 +65,6 @@ class UserController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
