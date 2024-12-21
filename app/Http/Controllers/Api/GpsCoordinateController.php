@@ -19,7 +19,7 @@ class GpsCoordinateController extends Controller
 
 
 
-    public function syncGpsPerson($id)
+    public function syncGpsPerson(Request $request,$id)
     {
         // \Log::info('id: ', $id);
         // ob_start();

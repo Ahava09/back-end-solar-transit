@@ -54,6 +54,7 @@ class User extends Authenticatable
             ->withClaim('user_id', $this->id) 
             ->withClaim('email', $this->email) 
             ->withClaim('name', $this->name) 
+            ->withClaim('role', $this->role) 
             ->getToken($config->signer(), $config->signingKey());
 
         return $token->toString();

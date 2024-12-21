@@ -18,18 +18,20 @@ class UserController extends Controller
         $this->microservice = $microservice;
     }
 
-    public function index($id)
+    public function index(Request $request, $id)
     {
-        $coordinates = User::with('coordinates')->find($id);
+        $coordinate = User::with(['coordinates' => function ($query) {
+            $query->orderBy('date_time', 'asc'); 
+        }])->find($id);
 
-        if (!$coordinates) {
+        if (!$coordinate) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        return response()->json($coordinates);
+        return response()->json($coordinate);
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
         $users = User::All();
 
@@ -40,19 +42,21 @@ class UserController extends Controller
         return response()->json($users);
     }
     
-    public function tracking()
+    public function tracking(Request $request)
     {
         $users = User::All();
         $coordinates = [];
         foreach ($users as $user) {
-            $coordinate = User::with('coordinates')->find($user->id);
+            $coordinate = User::with(['coordinates' => function ($query) {
+                $query->orderBy('date_time', 'asc'); 
+            }])->find($user->id);
             $coordinates[] = $coordinate;
         }
 
         return response()->json($coordinates);
     }
 
-    public function syncPersons()
+    public function syncPersons(Request $request)
     {
         $persons = $this->microservice->getAllPersons();
 
@@ -62,6 +66,7 @@ class UserController extends Controller
                 [
                     'name' => $person['name'],
                     'password' => $person['password'],
+                    'role' => $person['role'],
                 ]
             );
             GpsCoordinate::updateOrCreate(

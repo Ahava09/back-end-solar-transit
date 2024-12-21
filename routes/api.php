@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\GpsCoordinateController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GeocodingController;
+use App\Http\Middleware\JwtMiddleware;
 
 
-Route::get('/users/{id}', [UserController::class, 'index']);
+// Route::middleware(['jwt.auth'])->get('/users/{id}', [UserController::class, 'index']);
+Route::get('/users/{id}', [UserController::class, 'index'])->middleware(JwtMiddleware::class);
 Route::get('/users/', [UserController::class, 'tracking']);
 Route::get('/users', [UserController::class, 'getAll']);
 Route::post('/login', [UserController::class, 'login']);
