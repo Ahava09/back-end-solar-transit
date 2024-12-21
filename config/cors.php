@@ -19,13 +19,14 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://192.168.1.110:3000')],
+    // 'allowed_origins' => [env('FRONTEND_URL', 'http://192.168.1.110:3000')],
+    'allowed_origins' => ["*"],
 
     'allowed_origins_patterns' => ["*"],
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => ["Access-Control"],
+    'exposed_headers' => ["Access-Control-Allow-Origin"],
 
     'max_age' => 0,
 

@@ -58,4 +58,10 @@ class User extends Authenticatable
 
         return $token->toString();
     }
+
+    public function coordinates ()
+    {
+        return $this-->belongsTo(GpsCoordinate::class);
+    }
+    
 }
