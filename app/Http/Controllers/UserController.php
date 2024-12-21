@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\GpsCoordinate;
 use App\Services\NodeMicroservice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,17 @@ class UserController extends Controller
         }
 
         return response()->json($coordinates);
+    }
+
+    public function getAll()
+    {
+        $users = User::All();
+
+        if (!$users) {
+            return response()->json(['message' => 'No User'], 404);
+        }
+
+        return response()->json($users);
     }
     
     public function tracking()
@@ -52,6 +64,14 @@ class UserController extends Controller
                     'password' => $person['password'],
                 ]
             );
+            GpsCoordinate::updateOrCreate(
+                [
+                    'user_id' => $person['id'], 
+                    'latitude' => $person["currentPosition"]['latitude'],
+                    'longitude' => $person["currentPosition"]['longitude'],
+                    'date_time' => $person['last_time_seen']
+                ]
+            );
         }
 
         return response()->json(['message' => 'Users synchronized successfully.']);
@@ -69,7 +89,6 @@ class UserController extends Controller
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
-        // Générer un jeton d'authentification (JWT ou Sanctum)
         $token = $user->createTokenWithClaims();
 
         return response()->json([

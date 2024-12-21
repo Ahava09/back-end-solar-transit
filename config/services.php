@@ -37,5 +37,8 @@ return [
     'microservice_node' => [
         'url' => env('MICROSERVICE_NODE_URL'),
     ],
+    'google_maps' => [
+        'api_key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
 
 ];

@@ -51,9 +51,9 @@ class User extends Authenticatable
             ->issuedAt($now) // Date de création
             ->canOnlyBeUsedAfter($now) // Token immédiatement utilisable
             ->expiresAt($now->modify('+1 hour')) // Expiration après 1 heure
-            ->withClaim('user_id', $this->id) // Claim personnalisé
-            ->withClaim('email', $this->email) // Claim personnalisé
-            ->withClaim('name', $this->name) // Claim personnalisé
+            ->withClaim('user_id', $this->id) 
+            ->withClaim('email', $this->email) 
+            ->withClaim('name', $this->name) 
             ->getToken($config->signer(), $config->signingKey());
 
         return $token->toString();
