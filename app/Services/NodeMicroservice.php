@@ -27,7 +27,6 @@ class NodeMicroservice
     public function getCoordinatesPerson($id)
     {
         $response = Http::get("{$this->baseUrl}/coordinates/{$id}");
-
         if ($response->successful()) {
             return $response->json(); 
         }

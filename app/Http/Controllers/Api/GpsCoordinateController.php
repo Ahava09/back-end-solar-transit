@@ -7,6 +7,7 @@ use App\Services\NodeMicroservice;
 use App\Models\GpsCoordinate;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 
 class GpsCoordinateController extends Controller
@@ -30,33 +31,45 @@ class GpsCoordinateController extends Controller
 
     public function syncGpsPerson($id)
     {
+        // \Log::info('id: ', $id);
+        // ob_start();
+
         $user = User::where('id', $id)->first();
         if (!$user) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
         $request = $this->microservice->getCoordinatesPerson($id);
-        \Log::info('Microservice data:', $request->all());
-    
-        return $this->store(new Request($request));
+        // \Log::info('Microservice data: ', $request);
+
+        $request["latitude"] = $request["currentPosition"]["latitude"]; 
+        $request["longitude"] = $request["currentPosition"]["longitude"]; 
+
+        // error_log(ob_clean(), 4);
+        $req = new Request($request);
+        // var_dump($req);
+        return $this->store($req);
     }
 
 
     public function store(Request $request)
     {
+        // var_dump($request);
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'date_time' => 'required',
+            'id' => 'required|exists:users,id',
+            'latitude' => 'required', 
+            'longitude' => 'required',
+            'last_time_seen' => 'required',
         ]);
+
+        // $latitude = $request->input('currentPosition.latitude');
+        // $longitude = $request->input('currentPosition.longitude');
 
         $gpsCoordinate = GpsCoordinate::create([
-            'user_id' => $validated['user_id'],
+            'user_id' => $validated['id'],
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
-            'date_time' => $validated['date_time'],
+            'date_time' => $validated['last_time_seen'],
         ]);
-
         return response()->json(['message' => 'Data stored successfully']);
     }
 }
