@@ -57,7 +57,7 @@ class GpsCoordinateController extends Controller
             'longitude' => $validated['longitude'],
             'date_time' => $validated['last_time_seen'],
         ]);
-        return response()->json(['message' => 'Data stored successfully']);
+        return response()->json(['message' => 'Data stored successfully','data'  => $gpsCoordinate]);
     }
 
 }

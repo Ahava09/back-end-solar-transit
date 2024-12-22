@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\GpsCoordinate;
 use App\Services\NodeMicroservice;
+use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,10 +13,12 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     protected $microservice;
+    protected $geocodingService;
 
-    public function __construct(NodeMicroservice $microservice)
+    public function __construct(NodeMicroservice $microservice, GeocodingService $geocodingService)
     {
         $this->microservice = $microservice;
+        $this->geocodingService = $geocodingService;
     }
 
     public function index(Request $request, $id)
@@ -33,13 +36,24 @@ class UserController extends Controller
 
     public function getAll(Request $request)
     {
-        $users = User::All();
+        $jwt = str_replace('Bearer ', '', $request->header('Authorization'));
 
-        if (!$users) {
-            return response()->json(['message' => 'No User'], 404);
+        try {
+            $user = User::getUserDataFromToken($jwt);
+            if (!$user) {
+                return response()->json(['message' => 'No User'], 404);
+            } else {
+                $userRole = $user['role'];
+                if ($userRole == 'admin') {
+                    return response()->json(User::All());
+                } else {
+                    return response()->json(User::where('id', $user['user_id'])->get());
+                }
+            }
+        } catch (\RuntimeException $e) {
+            echo "Erreur : " . $e->getMessage();
         }
-
-        return response()->json($users);
+        
     }
     
     public function tracking(Request $request)
@@ -69,11 +83,14 @@ class UserController extends Controller
                     'role' => $person['role'],
                 ]
             );
+            // $coordinates = $geocodingService->getCoordinatesFromAddress($person['address']);
             GpsCoordinate::updateOrCreate(
                 [
                     'user_id' => $person['id'], 
                     'latitude' => $person["currentPosition"]['latitude'],
                     'longitude' => $person["currentPosition"]['longitude'],
+                    // 'latitude' => $coordinates['latitude'],
+                    // 'longitude' => $coordinates['longitude'],
                     'date_time' => $person['last_time_seen']
                 ]
             );

@@ -13,36 +13,29 @@ class NodeMicroservice
         $this->baseUrl = config('services.microservice_node.url');
     }
 
-    public function getAllPersons()
+    protected function request($method, $endpoint, $data = [])
     {
-        $response = Http::get("{$this->baseUrl}/api/persons");
-
-        if ($response->successful()) {
-            return $response->json(); 
-        }
-
-        throw new \Exception('Failed to fetch persons from Node.js microservice.');
-    }
-
-    public function getCoordinatesPerson($id)
-    {
-        $response = Http::get("{$this->baseUrl}/coordinates/{$id}");
-        if ($response->successful()) {
-            return $response->json(); 
-        }
-
-        throw new \Exception('Failed to fetch persons from Node.js microservice.');
-    }
-
-
-    public function getPersonById($id)
-    {
-        $response = Http::get("{$this->baseUrl}/api/persons/{$id}");
-
+        $response = Http::{$method}("{$this->baseUrl}/{$endpoint}", $data);
         if ($response->successful()) {
             return $response->json();
         }
 
-        throw new \Exception("Failed to fetch person with ID {$id} from Node.js microservice.");
+        throw new \RuntimeException("Request to {$endpoint} failed", $response->status());
+    }
+
+    public function getAllPersons()
+    {
+        
+        return $this->request('get', 'api/persons');
+    }
+
+    public function getCoordinatesPerson($id)
+    {
+        return $this->request('get', "coordinates/{$id}");
+    }
+
+    public function getPersonById($id)
+    {
+        return $this->request('get', "api/persons/{$id}");
     }
 }

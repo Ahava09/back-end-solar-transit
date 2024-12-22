@@ -28,10 +28,9 @@ class JwtMiddleware
             // Parser le token
             $token = $config->parser()->parse($token);
 
-            // Valider le token
-            if ($token->isExpired()) {
-                return response()->json(['message' => 'Token has expired'], 401);
-            }
+            // if ($token->isExpired()) {
+            //     return response()->json(['message' => 'Token has expired'], 401);
+            // }
 
             // Récupérer les informations du token (par exemple, user_id)
             $userId = $token->claims()->get('user_id');

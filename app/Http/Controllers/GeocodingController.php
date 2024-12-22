@@ -19,7 +19,6 @@ class GeocodingController extends Controller
         $request->validate([
             'address' => 'required|string',
         ]);
-        var_dump($request->input('address'));
 
         $coordinates = $this->geocodingService->getCoordinatesFromAddress($request->input('address'));
 

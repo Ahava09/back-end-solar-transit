@@ -11,7 +11,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.6",
-        "lcobucci/jwt": "^5.4"
+        "lcobucci/jwt": "4.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

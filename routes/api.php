@@ -11,11 +11,11 @@ use App\Http\Middleware\JwtMiddleware;
 
 // Route::middleware(['jwt.auth'])->get('/users/{id}', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'index'])->middleware(JwtMiddleware::class);
-Route::get('/users/', [UserController::class, 'tracking']);
-Route::get('/users', [UserController::class, 'getAll']);
+Route::get('/users/', [UserController::class, 'tracking'])->middleware(JwtMiddleware::class);
+Route::get('/users', [UserController::class, 'getAll'])->middleware(JwtMiddleware::class);
 Route::post('/login', [UserController::class, 'login']);
-Route::post('/gps-coordinates/{id}', [GpsCoordinateController::class, 'syncGpsPerson']);
-Route::post('/gps-coordinates/', [GpsCoordinateController::class, 'store']);
+Route::get('/gps-coordinates/{id}', [GpsCoordinateController::class, 'syncGpsPerson']);
+Route::post('/gps-coordinates/', [GpsCoordinateController::class, 'store'])->middleware(JwtMiddleware::class);
 Route::get('/sync-users', [UserController::class, 'syncPersons']);
 Route::post('/geocoding', [GeocodingController::class, 'getCoordinates']);
 

@@ -29,5 +29,6 @@ class GpsCoordinate extends Model
         return $this->hasMany(GpsCoordinate::class);
     }
 
+    // public 
 
 }

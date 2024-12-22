@@ -38,7 +38,6 @@ class GeocodingService
                     $data = $response->json();
                     if (!empty($data['results'])) {
                         $location = $data['results'][0]['geometry']['location'];
-                        var_dump($location);
                         return [
                             'latitude' => $location['lat'],
                             'longitude' => $location['lng'],

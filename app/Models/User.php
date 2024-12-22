@@ -16,6 +16,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     protected $hidden = [
@@ -45,12 +46,12 @@ class User extends Authenticatable
 
         $now = new \DateTimeImmutable();
         $token = $config->builder()
-            ->issuedBy(env('APP_URL')) // Emmetteur du token
-            ->permittedFor(env('APP_URL')) // Audience du token
-            ->identifiedBy(bin2hex(random_bytes(16))) // ID unique du token
-            ->issuedAt($now) // Date de création
-            ->canOnlyBeUsedAfter($now) // Token immédiatement utilisable
-            ->expiresAt($now->modify('+1 hour')) // Expiration après 1 heure
+            ->issuedBy(env('APP_URL')) 
+            ->permittedFor(env('APP_URL')) 
+            ->identifiedBy(bin2hex(random_bytes(16)))
+            ->issuedAt($now) 
+            ->canOnlyBeUsedAfter($now) 
+            ->expiresAt($now->modify('+1 hour'))
             ->withClaim('user_id', $this->id) 
             ->withClaim('email', $this->email) 
             ->withClaim('name', $this->name) 
@@ -59,6 +60,37 @@ class User extends Authenticatable
 
         return $token->toString();
     }
+
+    public static function getUserDataFromToken(string $jwt): array
+    {
+        $config = Configuration::forSymmetricSigner(
+            new \Lcobucci\JWT\Signer\Hmac\Sha256(),
+            \Lcobucci\JWT\Signer\Key\InMemory::plainText(env('JWT_SECRET'))
+        );
+
+        $parser = $config->parser();
+        $token = $parser->parse($jwt);
+
+        $constraints = $config->validationConstraints();
+        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\IssuedBy(env('APP_URL'));
+        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\PermittedFor(env('APP_URL'));
+        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\SignedWith($config->signer(), $config->signingKey());
+        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\ValidAt(new \Lcobucci\Clock\SystemClock(new \DateTimeZone('UTC')));
+
+        if (!$config->validator()->validate($token, ...$constraints)) {
+            throw new \RuntimeException('Token is invalid or expired.');
+        }
+
+        if (!$token->claims()->has('user_id') || !$token->claims()->has('role')) {
+            throw new \RuntimeException('Les claims nécessaires (user_id ou role) sont manquants.');
+        }
+
+        return [
+            'user_id' => $token->claims()->get('user_id'),
+            'role' => $token->claims()->get('role'),
+        ];
+    }
+
 
     public function coordinates ()
     {
