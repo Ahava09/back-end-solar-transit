@@ -1,99 +1,25 @@
 <?php
 
-namespace App\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Lcobucci\JWT\Configuration;
-
-class User extends Authenticatable
+class CreateUsersTable extends Migration
 {
-    use HasFactory, Notifiable;
-
-    protected $fillable = [
-        'id',
-        'name',
-        'email',
-        'password',
-        'role',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    protected function casts(): array
+    public function up()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        Schema::create('users', function (Blueprint $table) {
+            $table->id(); // Crée une colonne auto-incrémentée `id`
+            $table->string('name'); // Colonne pour le nom
+            $table->string('email')->unique(); // Colonne pour l'email unique
+            $table->string('password'); // Colonne pour le mot de passe
+            $table->string('role')->nullable(); // Colonne pour le rôle
+            $table->timestamps(); // Colonne pour les timestamps `created_at` et `updated_at`
+        });
     }
 
-    /**
-     * Create a JWT token with custom claims.
-     *
-     * @return string
-     */
-    public function createTokenWithClaims(): string
+    public function down()
     {
-        $config = Configuration::forSymmetricSigner(
-            new \Lcobucci\JWT\Signer\Hmac\Sha256(),
-            \Lcobucci\JWT\Signer\Key\InMemory::plainText(env('JWT_SECRET'))
-        );
-
-        $now = new \DateTimeImmutable();
-        $token = $config->builder()
-            ->issuedBy(env('APP_URL')) 
-            ->permittedFor(env('APP_URL')) 
-            ->identifiedBy(bin2hex(random_bytes(16)))
-            ->issuedAt($now) 
-            ->canOnlyBeUsedAfter($now) 
-            ->expiresAt($now->modify('+1 hour'))
-            ->withClaim('user_id', $this->id) 
-            ->withClaim('email', $this->email) 
-            ->withClaim('name', $this->name) 
-            ->withClaim('role', $this->role) 
-            ->getToken($config->signer(), $config->signingKey());
-
-        return $token->toString();
-    }
-
-    public static function getUserDataFromToken(string $jwt): array
-    {
-        $config = Configuration::forSymmetricSigner(
-            new \Lcobucci\JWT\Signer\Hmac\Sha256(),
-            \Lcobucci\JWT\Signer\Key\InMemory::plainText(env('JWT_SECRET'))
-        );
-
-        $parser = $config->parser();
-        $token = $parser->parse($jwt);
-
-        $constraints = $config->validationConstraints();
-        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\IssuedBy(env('APP_URL'));
-        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\PermittedFor(env('APP_URL'));
-        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\SignedWith($config->signer(), $config->signingKey());
-        $constraints[] = new \Lcobucci\JWT\Validation\Constraint\ValidAt(new \Lcobucci\Clock\SystemClock(new \DateTimeZone('UTC')));
-
-        if (!$config->validator()->validate($token, ...$constraints)) {
-            throw new \RuntimeException('Token is invalid or expired.');
-        }
-
-        if (!$token->claims()->has('user_id') || !$token->claims()->has('role')) {
-            throw new \RuntimeException('Les claims nécessaires (user_id ou role) sont manquants.');
-        }
-
-        return [
-            'user_id' => $token->claims()->get('user_id'),
-            'role' => $token->claims()->get('role'),
-        ];
-    }
-
-
-    public function coordinates ()
-    {
-        return $this->hasMany(GpsCoordinate::class);
+        Schema::dropIfExists('users');
     }
 }
