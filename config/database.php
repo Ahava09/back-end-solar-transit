@@ -84,12 +84,12 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', 'postgres.railway.internal'),
+            'url' => env('DB_URL', 'postgresql://postgresql:ECGQuQhEh02JNBQ6EFYWV2H4VzLxdmf9@dpg-ctk5pvdsvqrc738chbr0-a.oregon-postgres.render.com/gps_coordinates'),
+            'host' => env('DB_HOST', 'dpg-ctk5pvdsvqrc738chbr0-a'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'gps_coordinates'),
-            'username' => env('DB_USERNAME', 'postgres'),
-            'password' => env('DB_PASSWORD', 'OwGuduWEOBtGMfpboLozcScitZAViyNo'),
+            'username' => env('DB_USERNAME', 'postgresql'),
+            'password' => env('DB_PASSWORD', 'ECGQuQhEh02JNBQ6EFYWV2H4VzLxdmf9'),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
