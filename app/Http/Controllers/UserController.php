@@ -72,6 +72,7 @@ class UserController extends Controller
 
     public function syncPersons(Request $request)
     {
+        set_time_limit(300);
         $persons = $this->microservice->getAllPersons();
 
         foreach ($persons as $person) {
@@ -118,5 +119,22 @@ class UserController extends Controller
             'token' => $token,
         ],201);
     }
+
+    public function logout(Request $request)
+    {
+        // Récupérer le JWT depuis l'en-tête Authorization
+        $jwt = str_replace('Bearer ', '', $request->header('Authorization'));
+
+        if (!$jwt) {
+            return response()->json(['message' => 'No token provided'], 400);
+        }
+
+        // Ajouter le token à une liste de révocation (blacklist
+        cache()->put("blacklisted_token:{$jwt}", true, now()->addHours(2));
+
+        return response()->json(['message' => 'Logout successful.'], 200);
+    }
+
+
 
 }

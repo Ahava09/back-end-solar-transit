@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\GpsCoordinateController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GeocodingController;
 use App\Http\Middleware\JwtMiddleware;
+use App\Http\Middleware\CheckJwtBlacklist;
 
 
 // Route::middleware(['jwt.auth'])->get('/users/{id}', [UserController::class, 'index']);
@@ -22,3 +23,4 @@ Route::post('/geocoding', [GeocodingController::class, 'getCoordinates']);
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('/logout', [UserController::class, 'logout']);

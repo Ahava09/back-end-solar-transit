@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
-            $table->timestamps('date_time');
+            $table->timestamp('date_time')->default(DB::raw('CURRENT_TIMESTAMP'))->nullable();
+            $table->timestamps();
         });
     }
 
