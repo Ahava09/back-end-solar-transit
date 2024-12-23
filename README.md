@@ -1,66 +1,133 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# GPS Tracking API Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project Overview
 
-## About Laravel
+This is a **Laravel-based API** designed for managing GPS coordinates, timestamps, and user information. It provides endpoints for authentication, listing movements, and role-based actions. The API also integrates the **Google Geocoding API** to convert addresses into GPS coordinates and stores all data in a **PostgreSQL** database.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Key Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **RESTful Endpoints**: Provides API endpoints for user authentication, GPS data, and role-based access.
+- **Database Integration**: Stores GPS coordinates, timestamps, and user details in a relational database.
+- **Role-Based Actions**:
+  - **Administrator**: Can view all user movements.
+  - **Standard User**: Can view only their own movements.
+- **Google Geocoding API**: Converts addresses into GPS coordinates for geolocation functionality.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **PHP 8.1 or higher**
+- **Composer**
+- **PostgreSQL**
+- **Google Geocoding API Key**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+1. Clone this repository:
+   ```bash
+   git clone [https://github.com/your-username/backend-laravel-gps.git](https://github.com/Ahava09/back-end-solar-transit]
+   cd backend-laravel-gps
+2- Install dependencies using Composer:
+    ```bash
+    composer install
+3- Create a .env file in the project root and configure your environment variables:
+```env
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:GENERATE_YOUR_KEY
+APP_DEBUG=true
+APP_URL=http://localhost
+FRONTEND_URL=https://learning-squid-teaching.ngrok-free.app
+MICROSERVICE_NODE_URL=https://microservice-solar-transit.vercel.app
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=gps_tracking
+DB_USERNAME=your_postgres_user
+DB_PASSWORD=your_postgres_password
+JWT_SECRET=
+GOOGLE_GEOCODING_API_KEY=your_google_geocoding_api_key
+4- Generate the application key:
+```bas
+5- php artisan key:generate
+```bas
+6- Run the database migrations:
+```bas
+php artisan migrate
+7- Seed the database with test data (optional):
+```bas
+php artisan db:seed
+8- Start the development server:
+```bas
+php artisan serve
 
-### Premium Partners
+## API Endpoints
+Login
+    POST /api/login
+    Request body:
+    {
+        "email": "rakoto.andry@example.mg",
+        "password": "password123"
+    }
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Register
+    POST /api/register
+    Request body:
+    {
+      "name": "John Doe",
+      "email": "user@example.com",
+      "password": "password",
+      "password_confirmation": "password"
+    }
+Synchronize Users
+    GET api/sync-users
+Get All Users
+    GET api/users
+    Fetches a list of all users.
+    Middleware: JwtMiddleware
+Get User Path
+    GET api/users/{id}
+GPS Data Management
+    Synchronize GPS for a User
+        GET api/gps-coordinates/{id}
+        Fetches and synchronizes GPS data for a specific user with the microservice.
+    Synchronize GPS for All Users
+        POST /gps-coordinates/
+Geocoding
+    Convert Address to Coordinates
+        POST api/geocoding
+## Database
+### The database schema includes the following tables:
+    users:
+        id
+        name
+        email
+        password
+        role (e.g., admin, user)
 
-## Contributing
+    gps_coordinates:
+        id
+        user_id (foreign key to users)
+        latitude
+        longitude
+        timestamp
+### Migrations
+Ensure migrations are applied to create the database schema:
+php artisan migrate
+### Add the key to your .env file:
+GOOGLE_GEOCODING_API_KEY=your_api_key
+## Testing
+Run the test suite to ensure all endpoints work correctly:
+composer update lcobucci/jwt
+php artisan serve
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Deployment
+https://learning-squid-teaching.ngrok-free.app
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
